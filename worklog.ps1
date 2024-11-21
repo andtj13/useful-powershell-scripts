@@ -39,12 +39,31 @@ function Stop-LoggingTime {
     $global:LoggedTime = $null
 }
 
-$Category = Read-Host "Enter the category"
-$TaskName = Read-Host "Enter the task name"
+function Is-ScreenLocked {
+    $locked = Get-Process -Name LogonUI -ErrorAction SilentlyContinue
+    return $locked -ne $null
+}
 
-Start-LoggingTime -TaskName $TaskName
+function Run-Worklog {
+	$Category = Read-Host "Enter the category"
+	$TaskName = Read-Host "Enter the task name"
 
-Write-Host "-> Press enter to stop logging time for work activity"
-Read-Host
+	Start-LoggingTime -TaskName $TaskName
 
-Stop-LoggingTime
+	Write-Host "-> Press Enter to stop logging time for work activity"
+	
+	# if screen is locked, end task logging; otherwise end task logging if Enter is pressed.
+	while ($true) {
+    if (Is-ScreenLocked) {
+		Write-Output "The screen is locked.  Ending task and logging."
+		Stop-LoggingTime
+		break
+	} elseif ([console]::KeyAvailable -and [console]::ReadKey($true).Key -eq [consolekey]::Enter) {
+		Stop-LoggingTime
+		break
+	}
+	Start-Sleep -Seconds 1
+	}
+}
+
+Run-Worklog
