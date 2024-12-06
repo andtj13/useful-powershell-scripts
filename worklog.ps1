@@ -19,7 +19,7 @@ function Stop-LoggingTime {
     $EndTime = Get-Date
     $Duration = New-TimeSpan -Start $global:LoggedTime.StartTime -End $EndTime
 	$Minutes = [math]::Round($Duration.TotalMinutes, 2)
-	$Date = $global:LoggedTime.StartTime.ToString("dd-MM-yyyy")
+	$Date = $global:LoggedTime.StartTime.ToString("MM-dd-yyyy")
     
     $Record = New-Object PSObject -Property @{
         Category = $global:LoggedTime.Category
